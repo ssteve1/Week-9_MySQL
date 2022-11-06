@@ -1,5 +1,7 @@
 package projects.dao;
 
+import projects.exception.DbException;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -17,8 +19,9 @@ public class DbConnection {
             System.out.println("Connected to: " + uri);
             return DriverManager.getConnection(uri, USERNAME, PASSWORD);
         } catch (SQLException e) {
-            System.out.println("Couldn't connect at: " + uri);
-            throw new RuntimeException(e);
+            String msg = "Unable to connect at" + uri;
+            System.out.println(msg);
+            throw new DbException(msg);
         }
     }
 }
