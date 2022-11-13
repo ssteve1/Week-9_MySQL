@@ -3,6 +3,7 @@ package projects;
 import projects.exception.DbException;
 import projects.service.ProjectService;
 import projects.entity.Project;
+
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
@@ -11,9 +12,15 @@ import java.util.Scanner;
 public class ProjectsApp {
     private Scanner scanner = new Scanner(System.in);
     private ProjectService projectService = new ProjectService();
+    private Project curProject;
     //@formatter:off
-    private List<String> operations = List.of("1) Add a project.");
+    private List<String> operations = List.of(
+            "1) Add a project.",
+            "2) List projects.",
+            "3) Select a project."
+    );
     //@formatter:on
+
 
     public static void main(String[] args) {
         new ProjectsApp().processUserSelections();
@@ -22,15 +29,22 @@ public class ProjectsApp {
 
     private void processUserSelections() {
         boolean done = false;
-        while(!done){
-            try{
+        while (!done) {
+            try {
                 int selection = getUserSelection();
-                switch(selection){
+
+                switch (selection) {
                     case -1:
                         done = exitMenu();
                         break;
                     case 1:
                         createProject();
+                        break;
+                    case 2:
+                        listProjects();
+                        break;
+                    case 3:
+                        selectProject();
                         break;
                     default:
                         System.out.print("\n" + selection + " is not valid" +
@@ -40,9 +54,25 @@ public class ProjectsApp {
 
             } catch (Exception e) {
                 System.out.println("\nError: " + e + " Try again.");
-                //throw new RuntimeException(e);
+                e.printStackTrace();
             }
         }
+    }
+
+    private void selectProject() {
+        listProjects();
+        Integer projectId = getIntInput("Enter a project ID to select a project");
+
+        curProject = null;
+        curProject = projectService.fetchProjectById(projectId);
+    }
+
+    private void listProjects() {
+        List<Project> projects = projectService.fetchAllProjects();
+        System.out.println("\nProjects:");
+
+        projects.forEach(project -> System.out.println("   " + project.getProjectId() +
+                ": " + project.getProjectName()));
     }
 
     private void createProject() {
@@ -66,13 +96,12 @@ public class ProjectsApp {
 
     private BigDecimal getDecimalInput(String prompt) {
         String input = getStringInput(prompt);
-        if (Objects.isNull(input)){
+        if (Objects.isNull(input)) {
             return null;
         }
-        try{
+        try {
             return new BigDecimal(input).setScale(2);
-        }
-        catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
             throw new DbException(input + " is not valid number.");
             //throw new RuntimeException(e);
         }
@@ -86,20 +115,19 @@ public class ProjectsApp {
     private int getUserSelection() {
         printOperations();
         Integer input = getIntInput("Enter a menu selection");
-        return Objects.isNull(input) ? -1: input;
+        return Objects.isNull(input) ? -1 : input;
     }
 
     private Integer getIntInput(String prompt) {
         String input = getStringInput(prompt);
-        if (Objects.isNull(input)){
+        if (Objects.isNull(input)) {
             return null;
         }
-        try{
+        try {
             return Integer.valueOf(input);
-        } 
-        catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
             throw new DbException(input + " is not valid number.");
-           // throw new RuntimeException(e);
+            // throw new RuntimeException(e);
         }
     }
 
@@ -112,14 +140,20 @@ public class ProjectsApp {
 
     private void printOperations() {
         System.out.println("\nThese are the available selections." +
-                "Press the enter key to quit");
+                "Press the enter key to quit.");
         //Lamba expression
-        operations.forEach(line-> System.out.println("  " + line));
+        operations.forEach(line -> System.out.println("  " + line));
         /*with enhanced for loop
            for (String line: operations){
            System.out.println("  " + line)
           }
          */
+        if (Objects.isNull(curProject)){
+            System.out.println("\nYou are not working with a project. ");
+        }
+        else {
+            System.out.println("\nYou are working with this project: " + curProject);
+        }
     }
 
 }

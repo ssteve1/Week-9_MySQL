@@ -16,7 +16,7 @@ public class DbConnection {
     public static Connection getConnection(){
         String uri = "jdbc:mysql://localhost:3306/projects";
         try {
-            System.out.println("Connected to: " + uri);
+            System.out.println("Connection to schema 'projects' is successful.");
             return DriverManager.getConnection(uri, USERNAME, PASSWORD);
         } catch (SQLException e) {
             String msg = "Unable to connect at" + uri;
