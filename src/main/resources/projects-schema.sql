@@ -23,9 +23,11 @@ PRIMARY KEY(category_id)
 CREATE TABLE material(
 material_id INT NOT NULL AUTO_INCREMENT,
 project_id INT NOT NULL,
+material_name varchar(128) NOT NULL,
+num_required INT,
+cost DECIMAL(7,2),
 PRIMARY KEY (material_id),
 FOREIGN KEY(project_id) REFERENCES project (project_id)
-
 );
 
 CREATE TABLE step(
@@ -34,11 +36,13 @@ project_id INT NOT NULL,
 step_text TEXT NOT NULL,
 step_order INT NOT NULL,
 PRIMARY KEY (step_id),
-FOREIGN KEY(project_id) REFERENCES project (project_id)
+FOREIGN KEY (project_id) REFERENCES project (project_id)
 );
 
 CREATE TABLE project_category(
-category_id INT NOT NULL AUTO_INCREMENT,
-category_name VARCHAR (128),
-PRIMARY KEY (category_id)
+project_id INT NOT NULL,
+category_id INT NOT NULL,
+FOREIGN KEY (category_id) REFERENCES category (category_id) ON DELETE CASCADE,
+FOREIGN KEY (project_id) REFERENCES project (project_id) ON DELETE CASCADE,
+UNIQUE KEY (project_id, category_id)
 );

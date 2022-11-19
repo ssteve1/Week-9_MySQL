@@ -19,7 +19,7 @@ public class DbConnection {
             System.out.println("Connection to schema 'projects' is successful.");
             return DriverManager.getConnection(uri, USERNAME, PASSWORD);
         } catch (SQLException e) {
-            String msg = "Unable to connect at" + uri;
+            String msg = "Unable to connect at " + uri;
             System.out.println(msg);
             throw new DbException(msg);
         }
